@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+import string
+from collections import Counter
 import time
 import os
 import requests
@@ -91,6 +94,75 @@ class ElpaisScrapper:
         except Exception as e:
             print(f"failed to download{filename}: {e}")
     
+    def translate_titles(self,articles_data):
+        print("\n----------translating--------------")
+        translated_titles = []
+        
+        url = "https://rapid-translate-multi-traduction.p.rapidapi.com/t"
+        
+        #headers
+        headers = {
+        "content-type"    :  "application/json",
+        "X-RapidAPI-Key" : os.getenv("RAPIDAPI_KEY"),
+        "X-RapidAPI-Host" :  "rapid-translate-multi-traduction.p.rapidapi.com"
+        }
+        for i,art in enumerate(articles_data):
+            spanish_title = art['title']
+            print(f"translating: {spanish_title}")
+            
+            #data to send to API
+            payload = {
+                "from" : "es",
+                "to"   : "en",
+                "q"    : spanish_title
+            }
+            
+            try:
+                #send request
+                response = requests.post(url,json = payload, headers = headers)
+                
+                #check if it worked
+                if response.status_code == 200:
+                    #checking for a list sent by api
+                    translation = response.json()[0]
+                    print(f"-> Result : {translation}")
+                    
+                    #store store
+                    translated_titles.append(translation)
+                    art['translation_title'] = translation
+                else:
+                    print(f"-> API error{response.status_code}: {response.text}")
+                    translated_titles.append(spanish_title)
+            except Exception as e:
+                print(f"-> failed connection : {e}")
+                translated_titles.append(spanish_title)
+            time.sleep(1)
+        return translated_titles
+    
+    def analyze_headers(self,translated_titles_list):
+        print("\n------analysing headers---------")
+        
+        #joining titles
+        full_text = " ".join(translated_titles_list)
+        #clean punctuation and stuff
+        #
+        clean_text = full_text.translate(str.maketrans('','',string.punctuation))
+        
+        words = clean_text.lower().split()
+        
+        #count
+        word_counts = Counter(words)
+        
+        print("words repeated more than twice:")
+        found = False
+        for word,count in word_counts.items():
+          if count > 2:
+            print(f"-> '{word} : {count} times")
+            found = True
+        if not found:
+            print("-> no words appeared twice or more ")
+
+                    
     def close(self):
         self.driver.quit()
 
@@ -98,14 +170,21 @@ class ElpaisScrapper:
 if __name__ == "__main__":
     bot = ElpaisScrapper()
     try:
+        #scrape
         bot.visit_site()
         bot.go_to_opinion()
         articles_data = bot.get_articles()
     
     #print what we found
         for art in articles_data:
-            print(f"\nTitle : {art["title"]}")
-            print(f"\nContent : {art["content"]}")
+            print(f"Title : {art['title']}")
+        
+        translated_headers = bot.translate_titles(articles_data)
+        bot.analyze_headers(translated_headers)
+#for art in articles_data:
+#print(f"\nTitle : {art["title"]}")
+#print(f"\nContent : {art["content"]}")
+
     
     finally:
         bot.close()
