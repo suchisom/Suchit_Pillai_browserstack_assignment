@@ -4,19 +4,29 @@ from collections import Counter
 import time
 import os
 import requests
-from selenium import webdriver 
-from selenium.webdriver.firefox.service import Service
+from selenium import webdriver
+from concurrent.futures import ThreadPoolExecutor   
+#firefox
+#from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.firefox import GeckoDriverManager
+#excluding firefox
+#from webdriver_manager.firefox import GeckoDriverManager
 
 load_dotenv()
 
+BROWSERSTACK_USERNAME = os.getenv("BROWSERSTACK_USERNAME")
+BROWSERSTACK_ACCESS_KEY = os.getenv("BROWSERSTACK_ACCESS_KEY")
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+
+URL = f"https://{BROWSERSTACK_USERNAME}:{BROWSERSTACK_ACCESS_KEY}@hub-cloud.browserstack.com/wd/hub"
+
 class ElpaisScrapper:
-    def __init__(self):
-        self.driver = webdriver.Firefox(service = Service (GeckoDriverManager().install()))
-        self.wait = WebDriverWait(self.driver,10)
+    def __init__(self,driver,thread_name):
+        self.driver = driver
+        self.wait = WebDriverWait(self.driver,15)   #witch to 10 ->> 15
+        self.thread_name = thread_name
         
     def visit_site(self):
         print("Navigating site")
@@ -27,18 +37,22 @@ class ElpaisScrapper:
         try:
             accept_btn = self.wait.until(EC.element_to_be_clickable((By.ID, "didomi-notice-agree-button")))
             accept_btn.click()
-            print("Cookie accepted")
+            print(f"[{self.thread_name}]Cookie accepted")
         except Exception as e:
-            print("already accepted or not found:", e)
+            print(f"[{self.thread_name}]already accepted or not found:", e)
         
     def go_to_opinion(self):
-        print("navigate to opinion section")
+        print(f"[{self.thread_name}]navigate to opinion section")
         try:
             #look for link that containes opinion text
-            opinion_link = self.wait.until(EC.element_to_be_clickable((By.LINK_TEXT,"Opinion")))
-            opinion_link.click()
-        except:
+            #trying direct url
             self.driver.get("https://elpais.com/opinion/")
+        #    opinion_link = self.wait.until(EC.element_to_be_clickable((By.LINK_TEXT,"Opinion")))
+        #    opinion_link.click()
+            self.wait.until(EC.presence_of_all_elements_located((By.TAG_NAME,"body")))
+        except Exception as e:
+            print(f"[{self.thread_name}]error navigating: {e}")
+            
     
     def get_articles(self):
         print("fetching articles")
@@ -76,12 +90,14 @@ class ElpaisScrapper:
                     }
                 )
                 
-                #download image locally
+                #download image (with threads)
                 if img_url:
-                    self.download_image(img_url, f"article_{index + 1}.jpg")
+                    safe_name = self.thread_name.replace(" ","_").replace("/","-")
+                    filename = f"article_{index+1}_{safe_name}.jpg"
+                    self.download_image(img_url,filename)
                 
             except Exception as e:
-                print(f"error scrapping article{index} : {e}")
+                print(f"[{self.thread_name}]error scrapping article{index} : {e}")
             
         return data
     
@@ -91,9 +107,9 @@ class ElpaisScrapper:
             if response.status_code == 200:
                 with open(filename, 'wb')as f:
                     f.write(response.content)
-                print(f"Saved {filename}")
+                #print(f"Saved {filename}")
         except Exception as e:
-            print(f"failed to download{filename}: {e}")
+            pass #silent pass to continue thread
     
     def translate_titles(self,articles_data):
         print("\n----------translating--------------")
@@ -119,6 +135,8 @@ class ElpaisScrapper:
             }
             
             try:
+                #sleep time to avoid hitting api limits
+                time.sleep(0.5)
                 #send request
                 response = requests.post(url,json = payload, headers = headers)
                 
@@ -126,18 +144,18 @@ class ElpaisScrapper:
                 if response.status_code == 200:
                     #checking for a list sent by api
                     translation = response.json()[0]
-                    print(f"-> Result : {translation}")
+                    #print(f"-> Result : {translation}")
                     
                     #store store
                     translated_titles.append(translation)
                     art['translation_title'] = translation
                 else:
-                    print(f"-> API error{response.status_code}: {response.text}")
+                    #print(f"-> API error{response.status_code}: {response.text}")
                     translated_titles.append(spanish_title)
             except Exception as e:
-                print(f"-> failed connection : {e}")
+                #print(f"-> failed connection : {e}")
                 translated_titles.append(spanish_title)
-            time.sleep(1)
+            #time.sleep(1)
         return translated_titles
     
     def analyze_headers(self,translated_titles_list):
@@ -154,7 +172,7 @@ class ElpaisScrapper:
         #count
         word_counts = Counter(words)
         
-        print("words repeated more than twice:")
+        print(f"\n--words repeated more than twice[{self.thread_name}]--")
         found = False
         for word,count in word_counts.items():
           if count > 2:
@@ -168,27 +186,73 @@ class ElpaisScrapper:
         self.driver.quit()
 
 
-if __name__ == "__main__":
-    bot = ElpaisScrapper()
+def run_session(cap_index_tuple):
+    index,caps = cap_index_tuple
+    
+    #giving thread a nice name
+    device_name = caps.get('bstack:options', {}).get('deviceName',caps.get('browserName','Unknown'))
+    thread_name = f"{device_name}"
+    
+    print(f"--> starting thread {index + 1}: {thread_name}")
+    
+    #driver setup
+    options  = webdriver.ChromeOptions()
+    for key,value in caps.items():
+        options.set_capability(key,value)
+    
+    driver = None
     try:
-        #scrape
+        driver = webdriver.Remote(command_executor=URL,options = options)
+        
+        bot = ElpaisScrapper(driver,thread_name)
+        
+        
         bot.visit_site()
         bot.go_to_opinion()
-        articles_data = bot.get_articles()
-    
-    #print what we found
-        for art in articles_data:
-            print(f"Title : {art['title']}")
+        data = bot.get_articles()
         
-        translated_headers = bot.translate_titles(articles_data)
-        bot.analyze_headers(translated_headers)
-#for art in articles_data:
-#print(f"\nTitle : {art["title"]}")
-#print(f"\nContent : {art["content"]}")
-
+        #print spanish titles
+        print(f"[{thread_name}] Scraped {len(data)} articles.")
+        for d in data:
+            print(f"   [{thread_name}] ES Title: {d['title']}")
+        
+        translated = bot.translate_titles(data)
+        
+        # Print English Titles 
+        for t in translated:
+            print(f"   [{thread_name}] EN Title: {t}")
+            
+        bot.analyze_headers(translated)
+        
+        #mark test as passed
+        driver.execute_script('browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed", "reason": "Full Flow Completed"}}')
+        
+    except Exception as e:
+        print(f"[{thread_name}] CRITICAL ERROR: {e}")
+        if driver:
+            driver.execute_script(f'browserstack_executor: {{"action": "setSessionStatus", "arguments": {{"status":"failed", "reason": "Error: {str(e)}"}} }}')
     
     finally:
-        bot.close()
+        if driver:
+            driver.quit()
+            print(f"finished thread{index + 1} : {thread_name}")
+
+if __name__ == "__main__":
+    caps_list = [
+        { 'bstack:options': {'os': 'Windows', 'osVersion': '11'}, 'browserName': 'Chrome', 'browserVersion': 'latest' },
+        { 'bstack:options': {'os': 'OS X', 'osVersion': 'Ventura'}, 'browserName': 'Firefox', 'browserVersion': 'latest' },
+        { 'bstack:options': {'os': 'Windows', 'osVersion': '10'}, 'browserName': 'Edge', 'browserVersion': 'latest' },
+        { 'bstack:options': {'deviceName': 'Samsung Galaxy S22', 'osVersion': '12.0'}, 'browserName': 'chrome' },
+        { 'bstack:options': {'deviceName': 'iPhone 14 Pro', 'osVersion': '16'}, 'browserName': 'safari' }
+    ]
+
+    print("--- STARTING 5 PARALLEL SESSIONS ---")
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        executor.map(run_session, enumerate(caps_list))
+    print("--- ALL DONE ---")
+    
+        
+        
         
     
         
