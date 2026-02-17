@@ -215,6 +215,7 @@ def run_session(cap_index_tuple):
         print(f"[{thread_name}] Scraped {len(data)} articles.")
         for d in data:
             print(f"   [{thread_name}] ES Title: {d['title']}")
+            print(f"   [{thread_name}] ES Content: {d['content']}")
         
         translated = bot.translate_titles(data)
         
