@@ -53,27 +53,23 @@ Below are the actual execution logs from the parallel run involving Chrome (Wind
 ## Setup & Installation
 
 ### 1. Clone the Repository
-```bash
-git clone [https://github.com/YOUR_USERNAME/elpais-scraper.git](https://github.com/YOUR_USERNAME/elpais-scraper.git)
-cd elpais-scraper
+
+```bash git clone [https://github.com/YOUR_USERNAME/elpais-scraper.git](https://github.com/YOUR_USERNAME/elpais-scraper.git) cd elpais-scraper
 
 ### 2. Install Dependencies
+
 ```bash
 
 pip install -r requirements.txt
 
 ### 3. Configure Environment Variables
-```bash
-Create a .env file in the root directory:
-Ini, TOML
 
-BROWSERSTACK_USERNAME=your_username
-BROWSERSTACK_ACCESS_KEY=your_access_key
-RAPIDAPI_KEY=your_rapidapi_key
+```bash Create a .env file in the root directory: Ini, **TOML**
+
+BROWSERSTACK_USERNAME=your_username BROWSERSTACK_ACCESS_KEY=your_access_key RAPIDAPI_KEY=your_rapidapi_key
 
 ###How to Run
 
-Execute the main script to launch the parallel test suite:
-```bash
+Execute the main script to launch the parallel test suite: ```bash
 
 python browserstack.py
