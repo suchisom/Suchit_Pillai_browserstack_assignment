@@ -1,6 +1,5 @@
 # El Pais Opinion Scraper & Analyzer (BrowserStack Assignment)
 
-A high-performance automated scraping solution built with **Selenium** and **Python**. This tool executes parallel threads across **5 different devices** (Desktop & Mobile) via BrowserStack to extract content from *El Pais*, translate headers to English, and analyze word frequency.
 
 ## Live Execution Demo
 
@@ -23,19 +22,19 @@ The script integrates directly with BrowserStack Automate. Below is the proof of
 
 Below are the actual execution logs from the parallel run involving Chrome (Windows), Firefox (macOS), Edge (Windows), Samsung Galaxy S22 (Android), and iPhone 14 Pro (iOS).
 
-### Device 1: Chrome (Windows)
+
 <img width="100%" alt="Chrome Logs" src="https://github.com/user-attachments/assets/242fc6e1-8dd3-4e28-b804-4b80392d40ea" />
 
-### Device 2: Firefox (macOS)
+
 <img width="100%" alt="Firefox Logs" src="https://github.com/user-attachments/assets/4619cb01-43e1-4181-bc29-3ab9c2864c83" />
 
-### Device 3: Edge (Windows)
+
 <img width="100%" alt="Edge Logs" src="https://github.com/user-attachments/assets/ecaa85a7-6636-40bf-a6f5-08ec6419c1c0" />
 
-### Device 4: Samsung Galaxy S22 (Android)
+
 <img width="100%" alt="Samsung Logs" src="https://github.com/user-attachments/assets/07943a39-c823-4af2-9fe5-6a87b378c4f6" />
 
-### Device 5: iPhone 14 Pro (iOS)
+
 <img width="100%" alt="iPhone Logs" src="https://github.com/user-attachments/assets/4345b395-cb70-48a4-9092-0cda59727a1e" />
 
 ---
