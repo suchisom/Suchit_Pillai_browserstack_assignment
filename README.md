@@ -7,6 +7,9 @@
 
 [**> CLICK HERE TO WATCH THE SCREEN RECORDING <**](https://drive.google.com/file/d/1VJ14uB36yK-I6lIT6JTSVMldV8iXxm2k/view?usp=drive_link)
 
+**Build Link**
+
+[**View Full Test Results & Videos on BrowserStack**](https://tinyurl.com/3dbxj6jz)
 ---
 
 ## Dashboard Verification
