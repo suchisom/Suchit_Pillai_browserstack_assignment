@@ -1,4 +1,4 @@
-# El Pais Opinion Scraper & Analyzer (BrowserStack Assignment)
+<img width="1913" height="1009" alt="dashboard" src="https://github.com/user-attachments/assets/e6de34c0-6a1b-4b49-82e4-573398aa5657" /># El Pais Opinion Scraper & Analyzer (BrowserStack Assignment)
 
 
 ## Live Execution Demo
@@ -13,8 +13,8 @@
 
 The script integrates directly with BrowserStack Automate. Below is the proof of the 5 parallel sessions passing successfully.
 
-<img width="100%" alt="Dashboard View 1" src="https://github.com/user-attachments/assets/424bd8d3-41b6-4f44-b64b-d708fc06585b" />
-<img width="100%" alt="Dashboard View 2" src="https://github.com/user-attachments/assets/95218af2-cec9-4114-8475-8e2a1e0ee8a4" />
+<img width="1913" height="1009" alt="dashboard" src="https://github.com/user-attachments/assets/e26c5e4c-6370-48ba-9ef3-660bc1579779" />
+
 
 ---
 
@@ -22,20 +22,20 @@ The script integrates directly with BrowserStack Automate. Below is the proof of
 
 Below are the actual execution logs from the parallel run involving Chrome (Windows), Firefox (macOS), Edge (Windows), Samsung Galaxy S22 (Android), and iPhone 14 Pro (iOS).
 
-
-<img width="100%" alt="Chrome Logs" src="https://github.com/user-attachments/assets/242fc6e1-8dd3-4e28-b804-4b80392d40ea" />
-
-
-<img width="100%" alt="Firefox Logs" src="https://github.com/user-attachments/assets/4619cb01-43e1-4181-bc29-3ab9c2864c83" />
+<img width="1855" height="760" alt="first" src="https://github.com/user-attachments/assets/e69f2371-0291-4cfa-a827-7c47ba5f80c4" />
 
 
-<img width="100%" alt="Edge Logs" src="https://github.com/user-attachments/assets/ecaa85a7-6636-40bf-a6f5-08ec6419c1c0" />
+<img width="1830" height="810" alt="second" src="https://github.com/user-attachments/assets/804f2698-3768-4320-b34f-c2101d590a35" />
 
 
-<img width="100%" alt="Samsung Logs" src="https://github.com/user-attachments/assets/07943a39-c823-4af2-9fe5-6a87b378c4f6" />
+<img width="1815" height="857" alt="third" src="https://github.com/user-attachments/assets/09c04c55-9b44-4a7a-9a4b-8ff4ca7cc01c" />
 
 
-<img width="100%" alt="iPhone Logs" src="https://github.com/user-attachments/assets/4345b395-cb70-48a4-9092-0cda59727a1e" />
+<img width="1811" height="857" alt="fourth" src="https://github.com/user-attachments/assets/1e605b42-17bb-49d5-b407-1f95e32c9785" />
+
+
+<img width="1464" height="823" alt="fifth" src="https://github.com/user-attachments/assets/b658bcf7-1698-4aaf-9912-95b7726d3527" />
+
 
 ---
 
@@ -54,8 +54,7 @@ Below are the actual execution logs from the parallel run involving Chrome (Wind
 
 ### 1. Clone the Repository
 
-git clone [https://github.com/YOUR_USERNAME/elpais-scraper.git](https://github.com/YOUR_USERNAME/elpais-scraper.git) cd elpais-scraper
-
+git clone [[https://github.com/YOUR_USERNAME/elpais-scraper.git](https://github.com/suchisom/Suchit_Pillai_browserstack_assignment)]
 ### 2. Install Dependencies
 
 pip install -r requirements.txt
@@ -64,7 +63,9 @@ pip install -r requirements.txt
 
 Create a .env file in the root directory: Ini, **TOML**
 
-BROWSERSTACK_USERNAME=your_username BROWSERSTACK_ACCESS_KEY=your_access_key RAPIDAPI_KEY=your_rapidapi_key
+BROWSERSTACK_USERNAME=your_username 
+BROWSERSTACK_ACCESS_KEY=your_access_key 
+RAPIDAPI_KEY=your_rapidapi_key
 
 ### How to Run
 
