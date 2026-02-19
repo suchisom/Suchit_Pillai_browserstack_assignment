@@ -57,7 +57,7 @@ Below are the actual execution logs from the parallel run involving Chrome (Wind
 
 ### 1. Clone the Repository
 
-git clone [[https://github.com/YOUR_USERNAME/elpais-scraper.git](https://github.com/suchisom/Suchit_Pillai_browserstack_assignment)]
+git clone [[https://github.com/suchisom/Suchit_Pillai_browserstack_assignment](https://github.com/suchisom/Suchit_Pillai_browserstack_assignment)]
 ### 2. Install Dependencies
 
 pip install -r requirements.txt
